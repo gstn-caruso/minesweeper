@@ -4,4 +4,12 @@ class Cell < ApplicationRecord
   def reveal
     update!(revealed: true)
   end
+
+  def inspect
+    if revealed?
+      has_mine ? 'M' : surrounding_mines
+    else
+      '?'
+    end
+  end
 end

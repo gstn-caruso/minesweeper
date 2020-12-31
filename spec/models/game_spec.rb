@@ -46,9 +46,12 @@ RSpec.describe Game, type: :model do
 
         game.reveal(1, 1)
 
-        free_cells = game.cells
+        expected_game_result = <<~HEREDOC
+          0 0
+          0 0
+        HEREDOC
 
-        expect(free_cells.all?(&:revealed?)).to be(true)
+        expect(game.reload.inspect).to eq(expected_game_result)
       end
     end
   end
