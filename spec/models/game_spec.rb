@@ -53,6 +53,22 @@ RSpec.describe Game, type: :model do
 
         expect(game.reload.inspect).to eq(expected_game_result)
       end
+
+      it 'reveals surrounding cells until it reaches a mine, storing surrounding mines' do
+        expected_game_result = <<~HEREDOC
+          0 1 1
+          0 1 ?
+        HEREDOC
+
+        mines = [6]
+        small_grid = GameLevel.custom(2, 3, 1)
+
+        game = described_class.create_with_level(small_grid, mines)
+
+        game.reveal(1, 1)
+
+        expect(game.reload.inspect).to eq(expected_game_result)
+      end
     end
   end
 end

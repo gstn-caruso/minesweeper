@@ -38,7 +38,11 @@ class Game < ApplicationRecord
   def reveal(column, row)
     cell_to_reveal = cells.find_by!(column: column, row: row)
     cell_to_reveal.reveal
-    cells.map(&:reveal)
+
+    free_cells = (cells - mines - [cell_to_reveal])
+
+    free_cells.map(&:reveal)
+    free_cells.each { |free_cell| calculate_and_save_surrounding_mines(free_cell) }
   rescue ActiveRecord::RecordNotFound
     raise "cell (#{column},#{row}) does not exist"
   end
@@ -54,5 +58,19 @@ class Game < ApplicationRecord
   def inspect
     cells_by_row = cells.each_slice(columns).to_a
     "#{cells_by_row.map { |cells| cells.map(&:inspect).join(' ').to_s }.join("\n")}\n"
+  end
+
+  private
+
+  def calculate_and_save_surrounding_mines(cell)
+
+    surrounding_cell_rows = (cell.row - 1..cell.row + 1)
+    surrounding_cell_columns = (cell.column - 1..cell.column + 1)
+
+    surrounding_mines = cells.where(row: surrounding_cell_rows,
+                                    column: surrounding_cell_columns,
+                                    has_mine: true).count
+
+    cell.update!(surrounding_mines: surrounding_mines, revealed: true)
   end
 end
