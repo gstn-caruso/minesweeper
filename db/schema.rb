@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_30_105201) do
+ActiveRecord::Schema.define(version: 2020_12_31_183005) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,7 +20,8 @@ ActiveRecord::Schema.define(version: 2020_12_30_105201) do
     t.integer "column"
     t.integer "row"
     t.boolean "has_mine", default: false, null: false
-    t.string "content", default: "", null: false
+    t.boolean "revealed", default: false, null: false
+    t.integer "surrounding_mines", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["game_id"], name: "index_cells_on_game_id"
@@ -30,6 +31,9 @@ ActiveRecord::Schema.define(version: 2020_12_30_105201) do
     t.datetime "started_at", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "rows", default: 0, null: false
+    t.integer "columns", default: 0, null: false
+    t.integer "mines", default: 0, null: false
   end
 
   add_foreign_key "cells", "games"

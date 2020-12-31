@@ -6,7 +6,8 @@ class CreateCells < ActiveRecord::Migration[6.0]
       t.integer :row
 
       t.boolean :has_mine, null: false, default: false
-      t.string :content, null: false, default: ''
+      t.boolean :revealed, null: false, default: false
+      t.integer :surrounding_mines, null: false, default: 0
 
       t.timestamps
     end
