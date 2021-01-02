@@ -63,11 +63,6 @@ class Game < ApplicationRecord
     cells.where(has_mine: true)
   end
 
-  def inspect
-    cells_by_row = cells.each_slice(columns).to_a
-    "#{cells_by_row.map { |cells| cells.map(&:inspect).join(' ').to_s }.join("\n")}\n"
-  end
-
   private
 
   def free_cells_to_reveal_from(row, column, cells_to_reveal = [])

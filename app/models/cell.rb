@@ -8,12 +8,4 @@ class Cell < ApplicationRecord
   def surrounding_mines?
     surrounding_mines.positive?
   end
-
-  def inspect
-    if revealed?
-      has_mine ? 'M' : surrounding_mines
-    else
-      '?'
-    end
-  end
 end
