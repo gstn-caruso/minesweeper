@@ -1,5 +1,6 @@
 require: rubocop-rails
 AllCops:
+  SuggestExtensions: false
   Include:
     - Rakefile
     - config.ru
