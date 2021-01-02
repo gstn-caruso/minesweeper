@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_31_183005) do
+ActiveRecord::Schema.define(version: 2021_01_02_043403) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "cells", force: :cascade do |t|
     t.bigint "game_id"
-    t.integer "column"
+    t.integer "cell_column"
     t.integer "row"
     t.boolean "has_mine", default: false, null: false
     t.boolean "revealed", default: false, null: false

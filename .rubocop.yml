@@ -12,5 +12,7 @@ Style/Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:
   Enabled: false
+Style/ParallelAssignment:
+  Enabled: false
 Metrics/MethodLength:
   Max: 20

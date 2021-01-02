@@ -1,26 +1,18 @@
 class GameLevel
-  def self.custom(rows, columns, mines)
-    game_settings = OpenStruct.new
+  attr_reader :cells, :rows, :columns, :mines
 
-    game_settings.mines = mines
-    game_settings.rows = rows
-    game_settings.columns = columns
-    game_settings.cells = rows * columns
-
-    game_settings
+  def initialize(rows, columns, mines)
+    @mines = mines
+    @rows = rows
+    @columns = columns
+    @cells = rows * columns
   end
 
   def self.beginner
-    game_settings = OpenStruct.new
+    new(9, 9, 10)
+  end
 
-    rows = 9
-    columns = 9
-
-    game_settings.mines = 10
-    game_settings.rows = rows
-    game_settings.columns = columns
-    game_settings.cells = rows * columns
-
-    game_settings
+  def mine_positions
+    (1..cells).to_a.sample(mines)
   end
 end
