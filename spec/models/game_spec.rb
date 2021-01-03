@@ -53,7 +53,7 @@ RSpec.describe Game, type: :model do
 
       expect do
         game.reveal(99, 99)
-      end.to raise_exception('cell (99,99) does not exist')
+      end.to raise_exception('Cell (99,99) does not exist')
 
       expect(game).not_to be_loosed
     end

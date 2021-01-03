@@ -1,4 +1,6 @@
 class Game < ApplicationRecord
+  class CellNotFound < StandardError; end
+
   has_many :cells, autosave: true
 
   def self.create_easy
@@ -52,7 +54,7 @@ class Game < ApplicationRecord
 
     free_cells.map(&:reveal)
   rescue ActiveRecord::RecordNotFound
-    raise "cell (#{column},#{row}) does not exist"
+    raise CellNotFound, "Cell (#{column},#{row}) does not exist"
   end
 
   def loosed?

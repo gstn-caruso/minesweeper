@@ -5,4 +5,5 @@ Rails.application.routes.draw do
 
   get '/games/:id', to: 'games#show'
   post '/games', to: 'games#create'
+  post '/games/:id/reveal', to: 'games#reveal'
 end

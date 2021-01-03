@@ -9,6 +9,8 @@ AllCops:
     - config/**
     - bin/**
   NewCops: enable
+Style/SymbolArray:
+  Enabled: false
 Style/Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:
