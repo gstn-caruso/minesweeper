@@ -4,11 +4,6 @@ require 'matrix'
 RSpec.describe Game, type: :model do
   let(:beginner_level) { GameLevel.beginner }
 
-  def game_with(rows, columns, mine_positions)
-    game_level = GameLevel.new(rows, columns, mine_positions.length)
-    described_class.create_with_level(game_level, mine_positions)
-  end
-
   def display_cell_content(cell)
     if cell.revealed?
       cell.has_mine ? 'M' : cell.surrounding_mines.to_s
@@ -41,7 +36,7 @@ RSpec.describe Game, type: :model do
 
   describe 'Revealing cells' do
     it 'looses when the chosen cell has a mine' do
-      game = game_with(1, 1, [1])
+      game = create_game_with(1, 1, [1])
 
       game.reveal(1, 1)
 
@@ -58,13 +53,30 @@ RSpec.describe Game, type: :model do
       expect(game).not_to be_loosed
     end
 
+    it 'fails and do nothing when game is loosed' do
+      expected_game_result = [
+        ['M', '?'],
+        ['?', '?']
+      ]
+
+      game = create_game_with(2, 2, [1])
+
+      expect do
+        game.reveal(1, 1)
+        game.reveal(1, 2)
+      end.to raise_exception('Game over')
+
+      expect(game.reload).to be_loosed
+      expect_game_to_eq(game, expected_game_result)
+    end
+
     context 'when chosen cell has no mines around' do
       it 'reveals left cells until it reaches a cell surrounding a mine' do
         expected_game_result = [
           ['?', '?', '1', '0', '0']
         ]
 
-        game = game_with(1, 5, [2])
+        game = create_game_with(1, 5, [2])
 
         game.reveal(5, 1)
 
@@ -76,7 +88,7 @@ RSpec.describe Game, type: :model do
           ['0', '0', '0', '0', '0']
         ]
 
-        game = game_with(1, 5, [])
+        game = create_game_with(1, 5, [])
 
         game.reveal(5, 1)
 
@@ -88,7 +100,7 @@ RSpec.describe Game, type: :model do
           ['0', '0', '1', '?', '?']
         ]
 
-        game = game_with(1, 5, [4])
+        game = create_game_with(1, 5, [4])
 
         game.reveal(1, 1)
 
@@ -104,7 +116,7 @@ RSpec.describe Game, type: :model do
           ['?']
         ]
 
-        game = game_with(5, 1, [4])
+        game = create_game_with(5, 1, [4])
 
         game.reveal(1, 1)
 
@@ -120,7 +132,7 @@ RSpec.describe Game, type: :model do
           ['0']
         ]
 
-        game = game_with(5, 1, [])
+        game = create_game_with(5, 1, [])
 
         game.reveal(1, 1)
 
@@ -136,7 +148,7 @@ RSpec.describe Game, type: :model do
           ['0']
         ]
 
-        game = game_with(5, 1, [])
+        game = create_game_with(5, 1, [])
 
         game.reveal(1, 5)
 
@@ -152,7 +164,7 @@ RSpec.describe Game, type: :model do
           ['0']
         ]
 
-        game = game_with(5, 1, [2])
+        game = create_game_with(5, 1, [2])
 
         game.reveal(1, 5)
 
@@ -166,7 +178,7 @@ RSpec.describe Game, type: :model do
         ['0', '0']
       ]
 
-      game = game_with(2, 2, [])
+      game = create_game_with(2, 2, [])
 
       game.reveal(1, 1)
 
@@ -179,7 +191,7 @@ RSpec.describe Game, type: :model do
         ['0', '1', '?']
       ]
 
-      game = game_with(2, 3, [6])
+      game = create_game_with(2, 3, [6])
 
       game.reveal(1, 1)
 

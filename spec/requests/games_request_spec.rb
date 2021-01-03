@@ -99,6 +99,18 @@ RSpec.describe 'Games', type: :request do
       expect_to_have_json_body(response, { error: 'Cell (99,99) does not exist' })
     end
 
+    it 'fails when game is over' do
+      game = create_game_with(2, 2, [1])
+
+      post "/games/#{game.id}/reveal", params: { row: 1, column: 1 }
+
+      expect { post "/games/#{game.id}/reveal", params: { row: 1, column: 2 } }
+        .not_to(change { game.reload.cells.any?(&:revealed?) })
+
+      expect(response).to have_http_status(:bad_request)
+      expect_to_have_json_body(response, { error: 'Game over' })
+    end
+
     it 'reveals selected cell and returns the game' do
       game = Game.create_easy
 

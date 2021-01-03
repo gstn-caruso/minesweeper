@@ -8,7 +8,7 @@ class GamesController < ActionController::API
 
   rescue ActiveRecord::RecordNotFound
     render status: :not_found, json: { error: "There is no game with id: #{cell_params[:id]}" }
-  rescue ActionController::ParameterMissing, Game::CellNotFound => e
+  rescue ActionController::ParameterMissing, Game::CellNotFound, Game::GameOver => e
     render status: :bad_request, json: { error: e.message }
   end
 

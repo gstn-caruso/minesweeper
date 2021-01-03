@@ -1,6 +1,8 @@
 class Game < ApplicationRecord
   class CellNotFound < StandardError; end
 
+  class GameOver < StandardError; end
+
   has_many :cells, autosave: true
 
   def self.create_easy
@@ -47,6 +49,8 @@ class Game < ApplicationRecord
   private_class_method :surrounding_mines
 
   def reveal(column, row)
+    raise GameOver, 'Game over' if loosed?
+
     cell_to_reveal = cells.find_by!(cell_column: column, row: row)
     cell_to_reveal.reveal
 
