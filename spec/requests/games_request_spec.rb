@@ -25,7 +25,7 @@ RSpec.describe 'Games', type: :request do
       it 'returns a 404 not found status' do
         requested_game_id = 1
 
-        get "/games/#{requested_game_id}"
+        get "/api/games/#{requested_game_id}"
 
         expect(response).to have_http_status(:not_found)
         expect_to_have_json_body(response,
@@ -44,7 +44,7 @@ RSpec.describe 'Games', type: :request do
           }
         }
 
-        get "/games/#{game.id}"
+        get "/api/games/#{game.id}"
 
         expect(response).to have_http_status(:found)
         expect_to_have_json_body(response, expected_game)
@@ -54,7 +54,7 @@ RSpec.describe 'Games', type: :request do
 
   describe '#create' do
     it 'creates a new game and returns it' do
-      expect { post '/games' }.to change { Game.count }.by(1)
+      expect { post '/api/games' }.to change { Game.count }.by(1)
 
       created_game_id = JSON.parse(response.body)['game']['id']
 
@@ -74,7 +74,7 @@ RSpec.describe 'Games', type: :request do
     it 'fails with bad request when no cell information was given' do
       game = Game.create_easy
 
-      expect { post "/games/#{game.id}/reveal" }.not_to(change { game.cells.any?(&:revealed?) })
+      expect { post "/api/games/#{game.id}/reveal" }.not_to(change { game.cells.any?(&:revealed?) })
 
       expect(response).to have_http_status(:bad_request)
       expect_to_have_json_body(response, { error: 'param is missing or the value is empty: row, column' })
@@ -83,7 +83,7 @@ RSpec.describe 'Games', type: :request do
     it 'fails with not found error when game can not be found' do
       requested_game_id = 1
 
-      post "/games/#{requested_game_id}/reveal", params: { row: 1, column: 1 }
+      post "/api/games/#{requested_game_id}/reveal", params: { row: 1, column: 1 }
 
       expect(response).to have_http_status(:not_found)
       expect_to_have_json_body(response, { error: "There is no game with id: #{requested_game_id}" })
@@ -92,7 +92,7 @@ RSpec.describe 'Games', type: :request do
     it 'fails when cell can not be found' do
       game = Game.create_easy
 
-      expect { post "/games/#{game.id}/reveal", params: { row: 99, column: 99 } }
+      expect { post "/api/games/#{game.id}/reveal", params: { row: 99, column: 99 } }
         .not_to(change { game.reload.cells.any?(&:revealed?) })
 
       expect(response).to have_http_status(:bad_request)
@@ -102,9 +102,9 @@ RSpec.describe 'Games', type: :request do
     it 'fails when game is over' do
       game = create_game_with(2, 2, [1])
 
-      post "/games/#{game.id}/reveal", params: { row: 1, column: 1 }
+      post "/api/games/#{game.id}/reveal", params: { row: 1, column: 1 }
 
-      expect { post "/games/#{game.id}/reveal", params: { row: 1, column: 2 } }
+      expect { post "/api/games/#{game.id}/reveal", params: { row: 1, column: 2 } }
         .not_to(change { game.reload.cells.any?(&:revealed?) })
 
       expect(response).to have_http_status(:bad_request)
@@ -114,7 +114,7 @@ RSpec.describe 'Games', type: :request do
     it 'reveals selected cell and returns the game' do
       game = Game.create_easy
 
-      expect { post "/games/#{game.id}/reveal", params: { row: 1, column: 1 } }
+      expect { post "/api/games/#{game.id}/reveal", params: { row: 1, column: 1 } }
         .to(change { game.reload.cells.any?(&:revealed?) }.from(false).to(true))
 
       returned_game = JSON.parse(response.body)['game']
