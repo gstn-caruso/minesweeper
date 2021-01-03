@@ -1,5 +1,10 @@
 class GamesController < ActionController::API
 
+  def create
+    game = Game.create_easy
+    render status: :created, json: game
+  end
+
   def show
     render status: :found, json: Game.includes(:cells).find(params[:id])
   rescue ActiveRecord::RecordNotFound

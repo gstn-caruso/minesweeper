@@ -47,4 +47,32 @@ RSpec.describe 'Games', type: :request do
       end
     end
   end
+
+  describe '#create' do
+    it 'creates a new game and returns it' do
+      expect { post '/games' }.to change { Game.count }.by(1)
+
+      created_game_id = JSON.parse(response.body)['game']['id']
+
+      expected_game_response = {
+        game: {
+          id: created_game_id,
+          cells: [
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?'],
+            ['?', '?', '?', '?', '?', '?', '?', '?', '?']
+          ]
+        }
+      }
+
+      expect(response).to have_http_status(:created)
+      expect_to_have_json_body(response, expected_game_response)
+    end
+  end
 end
