@@ -49,7 +49,7 @@ class Game < ApplicationRecord
   private_class_method :surrounding_mines
 
   def reveal(column, row)
-    raise GameOver, 'Game over' if loosed?
+    raise GameOver, 'Game over' if finished?
 
     cell_to_reveal = cells.find_by!(cell_column: column, row: row)
     cell_to_reveal.reveal
@@ -61,6 +61,10 @@ class Game < ApplicationRecord
     raise CellNotFound, "Cell (#{column},#{row}) does not exist"
   end
 
+  def won?
+    cells.where(has_mine: false).all?(&:revealed) && !loosed?
+  end
+
   def loosed?
     mines.any?(&:revealed?)
   end
@@ -70,6 +74,10 @@ class Game < ApplicationRecord
   end
 
   private
+
+  def finished?
+    loosed? || won?
+  end
 
   def free_cells_to_reveal_from(row, column, cells_to_reveal = [])
     return cells_to_reveal if out_of_bounds?(column, row)

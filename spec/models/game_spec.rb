@@ -22,6 +22,22 @@ RSpec.describe Game, type: :model do
     expect(game_result).to eq(expected)
   end
 
+  it 'wins when all free cells are revealed' do
+    expected_game_result = [
+      ['?', '1', '0'],
+      ['1', '1', '0']
+    ]
+
+    game = create_game_with(2, 3, [1])
+
+    game.reveal(3, 1)
+    game.reveal(2, 1)
+    game.reveal(1, 2)
+
+    expect(game).to be_won
+    expect_game_to_eq(game, expected_game_result)
+  end
+
   describe 'Beginner level' do
     it 'crates a 9x9 game by default' do
       game = described_class.create_easy
@@ -36,7 +52,7 @@ RSpec.describe Game, type: :model do
 
   describe 'Revealing cells' do
     it 'looses when the chosen cell has a mine' do
-      game = create_game_with(1, 1, [1])
+      game = create_game_with(2, 2, [1])
 
       game.reveal(1, 1)
 
@@ -60,13 +76,29 @@ RSpec.describe Game, type: :model do
       ]
 
       game = create_game_with(2, 2, [1])
+      game.reveal(1, 1)
 
-      expect do
-        game.reveal(1, 1)
-        game.reveal(1, 2)
-      end.to raise_exception('Game over')
+      expect { game.reveal(1, 2) }.to raise_exception('Game over')
 
       expect(game.reload).to be_loosed
+      expect_game_to_eq(game, expected_game_result)
+    end
+
+    it 'fails and do nothing when game is already won' do
+      expected_game_result = [
+        ['?', '1'],
+        ['1', '1']
+      ]
+
+      game = create_game_with(2, 2, [1])
+
+      game.reveal(2, 1)
+      game.reveal(1, 2)
+      game.reveal(2, 2)
+
+      expect { game.reveal(1, 1) }.to raise_exception('Game over')
+
+      expect(game.reload).to be_won
       expect_game_to_eq(game, expected_game_result)
     end
 
