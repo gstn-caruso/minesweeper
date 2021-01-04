@@ -46,7 +46,7 @@ RSpec.describe 'Games', type: :request do
 
         get "/api/games/#{game.id}"
 
-        expect(response).to have_http_status(:found)
+        expect(response).to have_http_status(:ok)
         expect_to_have_json_body(response, expected_game)
       end
     end

@@ -1,0 +1,171 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/games/{id}":
+    get:
+      summary: Retrieves a game
+      tags:
+      - Game
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Found game
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  cells:
+                    type: object
+                    properties:
+                      row:
+                        type: integer
+                      column:
+                        type: integer
+                      value:
+                        type: string
+                        enum:
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+                        - 5
+                        - 6
+                        - 7
+                        - 8
+                        - 9
+                        - "?"
+                        - M
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  "/api/games":
+    post:
+      summary: Creates a new Game
+      tags:
+      - Game
+      responses:
+        '201':
+          description: Created game
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  cells:
+                    type: object
+                    properties:
+                      row:
+                        type: integer
+                      column:
+                        type: integer
+                      value:
+                        type: string
+                        enum:
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+                        - 5
+                        - 6
+                        - 7
+                        - 8
+                        - 9
+                        - "?"
+                        - M
+  "/api/games/{id}/reveal":
+    post:
+      summary: Reveals a cell
+      tags:
+      - Game
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Updated game
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  cells:
+                    type: object
+                    properties:
+                      row:
+                        type: integer
+                      column:
+                        type: integer
+                      value:
+                        type: string
+                        enum:
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+                        - 5
+                        - 6
+                        - 7
+                        - 8
+                        - 9
+                        - "?"
+                        - M
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '400':
+          description: Cell not found, Finished game and Missing cell information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                row:
+                  type: integer
+                column:
+                  type: integer
+              required:
+              - row
+              - column
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3000
