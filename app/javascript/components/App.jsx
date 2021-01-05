@@ -1,21 +1,10 @@
 import * as React from "react";
 import {
-  useParams,
   Switch,
   Route,
   BrowserRouter as Router, useHistory,
 } from "react-router-dom";
 import GameGrid from "./GameGrid";
-
-function Child() {
-  let {id} = useParams();
-
-  return (
-    <div>
-      <h3>ID: {id}</h3>
-    </div>
-  );
-}
 
 function CreateAGame() {
   const history = useHistory();

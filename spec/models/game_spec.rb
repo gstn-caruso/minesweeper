@@ -43,6 +43,12 @@ RSpec.describe Game, type: :model do
   end
 
   describe 'Revealing cells' do
+    it 'updates started at date time' do
+      game = Game.create_easy
+
+      expect { game.reveal(1, 1) }.to(change { game.reload.started_at })
+    end
+
     it 'looses when the chosen cell has a mine' do
       game = create_game_with(2, 2, [1])
 

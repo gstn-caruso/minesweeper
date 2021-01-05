@@ -13,3 +13,47 @@
  *= require_tree .
  *= require_self
  */
+
+ul {
+  list-style-type: none;
+}
+
+body, button {
+  font-family: "Source Code Pro", Monaco, monospace;
+}
+
+.cell {
+  width: 3rem;
+  height: 3rem;
+  margin: 0.25rem;
+
+  border-radius: 0;
+  border: black solid 1px;
+}
+
+.cell span {
+  display: block;
+  text-align: center;
+  line-height: 1em;
+}
+
+.cell.number {
+  font-weight: bold;
+  background-color: #3ddb3d;
+}
+
+.cell.flagged {
+  background-color: lightblue;
+}
+
+.cell.mine {
+  background-color: lightcoral;
+}
+
+.cell.hidden {
+  background-color: lightgray;
+}
+
+.cell {
+  background-color: lightgreen;
+}

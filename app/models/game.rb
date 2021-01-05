@@ -9,8 +9,7 @@ class Game < ApplicationRecord
   end
 
   def self.create_with_level(game_level, mine_positions)
-    easy_game = Game.new(started_at: DateTime.now,
-                         columns: game_level.columns,
+    easy_game = Game.new(columns: game_level.columns,
                          rows: game_level.rows,
                          mines: game_level.mines)
 
@@ -51,6 +50,7 @@ class Game < ApplicationRecord
 
     cell_to_reveal = cells.find_by!(cell_column: column, row: row)
     cell_to_reveal.reveal
+    update!(started_at: DateTime.now)
 
     free_cells = free_cells_to_reveal_from(cell_to_reveal.row, cell_to_reveal.cell_column)
 

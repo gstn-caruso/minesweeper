@@ -104,7 +104,7 @@ paths:
           type: integer
       responses:
         '200':
-          description: Updated game
+          description: Updated game including started at date time
           content:
             application/json:
               schema:
@@ -112,6 +112,8 @@ paths:
                 properties:
                   id:
                     type: integer
+                  started_at:
+                    type: date_time
                   cells:
                     type: object
                     properties:

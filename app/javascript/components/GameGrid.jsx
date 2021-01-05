@@ -1,6 +1,8 @@
 import * as React from "react";
 import {chunk, indexBy, size} from "underscore";
 import {withRouter} from "react-router";
+import SecondsSince from "./SecondsSince";
+import {Cell} from "./Cell";
 
 class GameGrid extends React.Component {
   constructor(props) {
@@ -59,11 +61,12 @@ class GameGrid extends React.Component {
       {chunk(this.cells(), this.rowAmount()).map((row) => {
         return <li key={row[0].row}>
           {row.map(({row, column, value}) => {
-            return <button key={row + column}
-                           onContextMenu={(e)=> this.flag(e, row, column)}
-                           onClick={() => this.reveal(row, column)}>
-              {value}
-            </button>;
+            return <Cell key={row + column}
+                         value={value}
+                         row={row}
+                         column={column}
+                         flag={this.flag}
+                         reveal={this.reveal}/>;
           })}
         </li>
       })}
@@ -71,8 +74,17 @@ class GameGrid extends React.Component {
     </ul>
   }
 
+  timer = () => {
+    if (this.state.game['started_at']) {
+      return <SecondsSince dateTime={this.state.game['started_at']}/>;
+    } else {
+      return <p>0</p>;
+    }
+  };
+
   render() {
     return <>
+      {this.timer()}
       <p>Rows: {this.rowAmount()}</p>
       <p>Columns: {this.columnAmount()}</p>
       {this.cellRows()}

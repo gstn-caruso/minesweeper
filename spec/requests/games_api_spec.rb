@@ -87,10 +87,11 @@ RSpec.describe 'Game API', type: :request do
         required: ['row', 'column']
       }
 
-      response '200', 'Updated game' do
+      response '200', 'Updated game including started at date time' do
         schema type: :object,
                properties: {
                  id: { type: :integer },
+                 started_at: { type: :date_time },
                  cells: {
                    type: :object,
                    properties: {

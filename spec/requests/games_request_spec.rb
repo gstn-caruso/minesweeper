@@ -111,7 +111,7 @@ RSpec.describe 'Games', type: :request do
       expect_to_have_json_body(response, { error: 'Game over' })
     end
 
-    it 'reveals selected cell and returns the game' do
+    it 'reveals selected cell and returns the game including the started_at time' do
       game = Game.create_easy
 
       expect { post "/api/games/#{game.id}/reveal", params: { row: 1, column: 1 } }
@@ -120,7 +120,7 @@ RSpec.describe 'Games', type: :request do
       returned_game = JSON.parse(response.body)['game']
 
       expect(response).to have_http_status(:ok)
-      expect(returned_game.keys).to eq(%w[id cells])
+      expect(returned_game.keys).to eq(%w[id cells started_at])
     end
   end
 
