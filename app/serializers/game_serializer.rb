@@ -17,15 +17,7 @@ class GameSerializer < ActiveModel::Serializer
     {
       row: cell.row,
       column: cell.cell_column,
-      value: cell_value(cell)
+      value: cell.display_content
     }
-  end
-
-  def cell_value(cell)
-    if cell.revealed?
-      cell.has_mine ? 'M' : cell.surrounding_mines.to_s
-    else
-      '?'
-    end
   end
 end

@@ -123,4 +123,71 @@ RSpec.describe 'Games', type: :request do
       expect(returned_game.keys).to eq(%w[id cells])
     end
   end
+
+  describe '#flag' do
+    it 'fails with bad request when no cell information was given' do
+      game = Game.create_easy
+
+      expect { post "/api/games/#{game.id}/flag" }.not_to(change { game.cells.any?(&:flagged?) })
+
+      expect(response).to have_http_status(:bad_request)
+      expect_to_have_json_body(response, { error: 'param is missing or the value is empty: row, column' })
+    end
+
+    it 'fails with not found error when game can not be found' do
+      requested_game_id = 1
+
+      post "/api/games/#{requested_game_id}/flag", params: { row: 1, column: 1 }
+
+      expect(response).to have_http_status(:not_found)
+      expect_to_have_json_body(response, { error: "There is no game with id: #{requested_game_id}" })
+    end
+
+    it 'fails when cell can not be found' do
+      game = Game.create_easy
+
+      expect { post "/api/games/#{game.id}/flag", params: { row: 99, column: 99 } }
+        .not_to(change { game.reload.cells.any?(&:flagged?) })
+
+      expect(response).to have_http_status(:bad_request)
+      expect_to_have_json_body(response, { error: 'Cell (99,99) does not exist' })
+    end
+
+    it 'fails when game is over' do
+      game = create_game_with(2, 2, [1])
+
+      post "/api/games/#{game.id}/reveal", params: { row: 1, column: 1 }
+
+      expect { post "/api/games/#{game.id}/flag", params: { row: 1, column: 2 } }
+        .not_to(change { game.reload.cells.any?(&:flagged?) })
+
+      expect(response).to have_http_status(:bad_request)
+      expect_to_have_json_body(response, { error: 'Game over' })
+    end
+
+    it 'fails when cell is revealed' do
+      game = create_game_with(2, 3, [6])
+      game.reveal(1, 1)
+
+      post "/api/games/#{game.id}/reveal", params: { row: 1, column: 1 }
+
+      expect { post "/api/games/#{game.id}/flag", params: { row: 1, column: 2 } }
+        .not_to(change { game.reload.cells.any?(&:flagged?) })
+
+      expect(response).to have_http_status(:bad_request)
+      expect_to_have_json_body(response, { error: 'Cell (2,1) is revealed' })
+    end
+
+    it 'flags selected cell and returns the game' do
+      game = Game.create_easy
+
+      expect { post "/api/games/#{game.id}/flag", params: { row: 1, column: 1 } }
+        .to(change { game.reload.cells.any?(&:flagged?) }.from(false).to(true))
+
+      returned_game = JSON.parse(response.body)['game']
+
+      expect(response).to have_http_status(:ok)
+      expect(returned_game.keys).to eq(%w[id cells])
+    end
+  end
 end

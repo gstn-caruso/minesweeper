@@ -1,6 +1,18 @@
 module Api
   class GamesController < ActionController::API
 
+    def flag
+      game = Game.find(cell_params[:id])
+      game.flag(cell_params[:column], cell_params[:row])
+
+      render status: :ok, json: game
+
+    rescue ActiveRecord::RecordNotFound
+      render status: :not_found, json: { error: "There is no game with id: #{cell_params[:id]}" }
+    rescue ActionController::ParameterMissing, Game::PreconditionFailed => e
+      render status: :bad_request, json: { error: e.message }
+    end
+
     def reveal
       game = Game.find(cell_params[:id])
       game.reveal(cell_params[:column], cell_params[:row])
@@ -9,7 +21,7 @@ module Api
 
     rescue ActiveRecord::RecordNotFound
       render status: :not_found, json: { error: "There is no game with id: #{cell_params[:id]}" }
-    rescue ActionController::ParameterMissing, Game::CellNotFound, Game::GameOver => e
+    rescue ActionController::ParameterMissing, Game::PreconditionFailed => e
       render status: :bad_request, json: { error: e.message }
     end
 

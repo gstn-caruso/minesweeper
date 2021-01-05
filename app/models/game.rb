@@ -1,7 +1,5 @@
 class Game < ApplicationRecord
-  class CellNotFound < StandardError; end
-
-  class GameOver < StandardError; end
+  class PreconditionFailed < StandardError; end
 
   has_many :cells, autosave: true
 
@@ -49,7 +47,7 @@ class Game < ApplicationRecord
   private_class_method :surrounding_mines
 
   def reveal(column, row)
-    raise GameOver, 'Game over' if finished?
+    raise PreconditionFailed, 'Game over' if finished?
 
     cell_to_reveal = cells.find_by!(cell_column: column, row: row)
     cell_to_reveal.reveal
@@ -58,7 +56,16 @@ class Game < ApplicationRecord
 
     free_cells.map(&:reveal)
   rescue ActiveRecord::RecordNotFound
-    raise CellNotFound, "Cell (#{column},#{row}) does not exist"
+    raise PreconditionFailed, "Cell (#{column},#{row}) does not exist"
+  end
+
+  def flag(column, row)
+    raise PreconditionFailed, 'Game over' if finished?
+
+    cell_to_flag = cells.find_by!(cell_column: column, row: row)
+    cell_to_flag.flag
+  rescue ActiveRecord::RecordNotFound
+    raise PreconditionFailed, "Cell (#{column},#{row}) does not exist"
   end
 
   def won?
@@ -103,7 +110,7 @@ class Game < ApplicationRecord
 
   def free_cell_at(column, row)
     cells.find do |cell|
-      cell.row == row && cell.cell_column == column && !cell.has_mine?
+      cell.row == row && cell.cell_column == column && !cell.has_mine? && !cell.flagged?
     end
   end
 

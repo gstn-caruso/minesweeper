@@ -4,16 +4,8 @@ require 'matrix'
 RSpec.describe Game, type: :model do
   let(:beginner_level) { GameLevel.beginner }
 
-  def display_cell_content(cell)
-    if cell.revealed?
-      cell.has_mine ? 'M' : cell.surrounding_mines.to_s
-    else
-      '?'
-    end
-  end
-
   def expect_game_to_eq(game, expected_rows)
-    game_cell_values = game.cells.map { |game_cell| display_cell_content(game_cell) }
+    game_cell_values = game.cells.reload.map(&:display_content)
     game_cells_by_row = game_cell_values.each_slice(game.columns).to_a
 
     game_result = Matrix.rows(game_cells_by_row)
@@ -228,6 +220,75 @@ RSpec.describe Game, type: :model do
       game.reveal(1, 1)
 
       expect_game_to_eq(game, expected_game_result)
+    end
+  end
+
+  describe 'flag a cell' do
+    it 'returns the game with that cell flagged' do
+      expected_game_result = [
+        ['F', '?', '?'],
+        ['?', '?', '?']
+      ]
+
+      game = create_game_with(2, 3, [])
+
+      game.flag(1, 1)
+
+      expect_game_to_eq(game, expected_game_result)
+    end
+
+    it 'cleans the cell when it is flagged twice' do
+      expected_game_result = [
+        ['?', '?', '?'],
+        ['?', '?', '?']
+      ]
+
+      game = create_game_with(2, 3, [])
+
+      game.flag(1, 1)
+      game.flag(1, 1)
+
+      expect_game_to_eq(game, expected_game_result)
+    end
+
+    it 'treats that cell as it would have a surrounding mine when it reveals surrounding cells' do
+      expected_game_result = [
+        ['0', '1', '?'],
+        ['F', '?', '?']
+      ]
+
+      game = create_game_with(2, 3, [6])
+
+      game.flag(1, 2)
+      game.reload
+      game.reveal(1, 1)
+
+      expect_game_to_eq(game, expected_game_result)
+    end
+
+    it 'fails when the cell is already revealed' do
+      game = create_game_with(2, 3, [6])
+
+      game.reveal(1, 1)
+      game.reload
+
+      expect do
+        game.flag(1, 1)
+      end.to raise_exception('Cell (1,1) is revealed')
+    end
+
+    it 'fails when game is finished' do
+      game = create_game_with(2, 3, [6])
+
+      game.reveal(1, 1)
+      game.reveal(3, 1)
+      game.reload
+
+      expect(game).to be_won
+
+      expect do
+        game.flag(3, 2)
+      end.to raise_exception('Game over')
     end
   end
 end
