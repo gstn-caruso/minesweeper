@@ -6,7 +6,7 @@ without detonating any of them, with help from clues about the number of neighbo
 
 ## API Docs
 
-You can find how to use the API in `/api/docs`
+You can find how to use the API in [`/api/docs`](https://shrouded-dawn-12735.herokuapp.com/api/docs/index.html)
 
 ## Frontend
 
